@@ -48,21 +48,37 @@ for w = 1:FOLD_SIZE:SAMPLES
     % das amostras no domínio do tempo.
     
     % Calcula a média de cada sinal
-    media_sinal = [mean(fourier_cls_1) mean(fourier_cls_2)];
+    media_sinal_1 = mean(fourier_cls_1);
+    media_sinal_2 = mean(fourier_cls_2);
+    % Calcula a média de cada centroide
+    media_centroide_1 = mean(media_sinal_1);
+    media_centroide_2 = mean(media_sinal_2);
     
     % Calcula a Curtose de cada sinal
-    curtose_sinal = [kurtosis(fourier_cls_1) kurtosis(fourier_cls_2)];
+    curtose_sinal_1 = kurtosis(fourier_cls_1); 
+    curtose_sinal_2 = kurtosis(fourier_cls_2);
+    % Calcula a curtose de cada centroide
+    curtose_centroide_1 = mean(kurtosis(fourier_cls_1));
+    curtose_centroide_2 = mean(kurtosis(fourier_cls_2));
     
-    % Calcula erro quadrado médio de cada sinal em relação ao sinal médio
-    % da classe 1.
     sinal_medio_1 = mean(fourier_cls_1, 2);
     sinal_medio_2 = mean(fourier_cls_2, 2);
-    eqm_1 = mean(sqrt([(sinal_medio_1 - fourier_cls_1).^2 (sinal_medio_1 - fourier_cls_2).^2]));
+    % Calcula erro quadrado médio de cada sinal em relação ao sinal médio
+    % da classe 1.
+    eqm_11 = mean(sqrt((sinal_medio_1 - fourier_cls_1).^2));
+    eqm_12 = mean(sqrt((sinal_medio_2 - fourier_cls_2).^2));
+    % Calcula a erro quadrado médio de cada centroide da classe 1
+    eqm_centroide_11 = mean(eqm_11);
+    eqm_centroide_12 = mean(eqm_12);
     
     % Calcula erro quadrado médio de cada sinal em relação ao sinal médio
     % da classe 2.
-    eqm_2 = mean(sqrt([(sinal_medio_1 - fourier_cls_1).^2 (sinal_medio_1 - fourier_cls_2).^2]));
-
+    eqm_21 = mean(sqrt((sinal_medio_1 - fourier_cls_1).^2));
+    eqm_22 = mean(sqrt((sinal_medio_2 - fourier_cls_2).^2));
+     % Calcula a erro quadrado médio de cada centroide da classe 2
+    eqm_centroide_21 = mean(eqm_21);
+    eqm_centroide_22 = mean(eqm_22);
+    
     % Erro para este ciclo do k-fold
     erro_ciclo = 0;
 
@@ -96,11 +112,17 @@ for w = 1:FOLD_SIZE:SAMPLES
         % EQM da amostra 2 em relação ao sinal médio da classe 2
         teste_eqm_22 = mean(sqrt((teste_fourier_cls_2 - sinal_medio_2) .^ 2));
         
-        distancias_cls_1 = sqrt((teste_media_sinal_cls_1 - mean(media_sinal))^2 + (teste_curtose_cls_1 - mean(curtose_sinal))^2 + (teste_eqm_11 - mean(eqm_1))^2 + (teste_eqm_12 - mean(eqm_2))^2 );
-        distancias_cls_2 = sqrt((teste_media_sinal_cls_2 - mean(media_sinal))^2 + (teste_curtose_cls_2 - mean(curtose_sinal))^2 + (teste_eqm_21 - mean(eqm_1))^2 + (teste_eqm_22 - mean(eqm_2))^2 );
+        distancia_cls_11 = sqrt((teste_media_sinal_cls_1 - media_centroide_1)^2 + (teste_curtose_cls_1 - curtose_centroide_1)^2 + (teste_eqm_11 - eqm_centroide_11)^2 + (teste_eqm_12 - eqm_centroide_12)^2 );
+        distancia_cls_12 = sqrt((teste_media_sinal_cls_1 - media_centroide_2)^2 + (teste_curtose_cls_1 - curtose_centroide_2)^2 + (teste_eqm_11 - eqm_centroide_21)^2 + (teste_eqm_12 - eqm_centroide_22)^2 );
+        distancia_cls_21 = sqrt((teste_media_sinal_cls_2 - media_centroide_1)^2 + (teste_curtose_cls_2 - curtose_centroide_1)^2 + (teste_eqm_11 - eqm_centroide_11)^2 + (teste_eqm_12 - eqm_centroide_12)^2 );
+        distancia_cls_22 = sqrt((teste_media_sinal_cls_2 - media_centroide_2)^2 + (teste_curtose_cls_2 - curtose_centroide_2)^2 + (teste_eqm_11 - eqm_centroide_21)^2 + (teste_eqm_12 - eqm_centroide_22)^2 );
+        
+        % Ordena as distâncias
+        ordem = [distancia_cls_11, distancia_cls_12, distancia_cls_21, distancia_cls_22];
+        [a, b] = sort(ordem);
        
         % Resultados
-        if distancias_cls_1 < distancias_cls_2
+        if b(1) == 1 || b(1) == 3
             result = [0; 1];
         else
             result = [1; 0];
@@ -109,7 +131,7 @@ for w = 1:FOLD_SIZE:SAMPLES
         % Vetor de checagem de classe
         classe = [classes(i);classes(i+5)];
         
-        if ~isequal(classe,result)
+        if ~isequal(classe, result)
             erro_ciclo = erro_ciclo + 1;
         end
         
