@@ -66,14 +66,14 @@ for w = 1:FOLD_SIZE:SAMPLES
     % Calcula erro quadrado médio de cada sinal em relação ao sinal médio
     % da classe 1.
     eqm_11 = mean(sqrt((sinal_medio_1 - fourier_cls_1).^2));
-    eqm_12 = mean(sqrt((sinal_medio_2 - fourier_cls_2).^2));
+    eqm_12 = mean(sqrt((sinal_medio_1 - fourier_cls_2).^2));
     % Calcula a erro quadrado médio de cada centroide da classe 1
     eqm_centroide_11 = mean(eqm_11);
     eqm_centroide_12 = mean(eqm_12);
     
     % Calcula erro quadrado médio de cada sinal em relação ao sinal médio
     % da classe 2.
-    eqm_21 = mean(sqrt((sinal_medio_1 - fourier_cls_1).^2));
+    eqm_21 = mean(sqrt((sinal_medio_2 - fourier_cls_1).^2));
     eqm_22 = mean(sqrt((sinal_medio_2 - fourier_cls_2).^2));
      % Calcula a erro quadrado médio de cada centroide da classe 2
     eqm_centroide_21 = mean(eqm_21);
