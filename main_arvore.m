@@ -22,7 +22,8 @@ for w = 1:FOLD_SIZE:SAMPLES
     teste_cls_1 = Classe1(:, indices_teste);
     teste_cls_2 = Classe2(:, indices_teste);
 
-    % Amostras de treino
+    % Amostras de treino (foram utilizadas para verificar os pontos que 
+    % produziriam a melhor divisão na árvore)
     treino_cls_1 = Classe1(:, indices_treino);
     treino_cls_2 = Classe2(:, indices_treino);
 
