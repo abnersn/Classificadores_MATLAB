@@ -1,11 +1,11 @@
 close all; clear; clc;
 
-FATOR_KNN = 3;
 K_FOLD = 10;
 SAMPLES = 50;
 FOLD_SIZE = SAMPLES / K_FOLD;
 
-fprintf("> Fator KNN: \n ");
+fprintf("> K Fold: %d\n", K_FOLD);
+fprintf("# Parâmetros utilizados:\n - Média da Transformada de Fourier do sinal\n - Curtose da Transformada de Fourier do Sinal\n - Erro quadrado médio em relação à Transformada de Fourier média dos sinais da classe 1\n - Erro quadrado médio em relação à Transformada de Fourier média dos sinais da classe 2\n");
 
 load('Classe1.mat');
 load('Classe2.mat');
@@ -97,24 +97,8 @@ for w = 1:FOLD_SIZE:SAMPLES
         classes = zeros(1, 90);
         classes(45:90) = 1;
 
-        distancias_cls_1 = zeros(1, 90);
-        distancias_cls_2 = zeros(1, 90);
-
-        for j = 1:length(media_sinal)
-            distancias_cls_1(j) = sqrt((teste_media_sinal_cls_1 - media_sinal(j))^2 + (teste_curtose_cls_1 - curtose_sinal(j))^2 + (teste_eqm_11 - eqm_1(j))^2 + (teste_eqm_12 - eqm_2(j))^2 );
-            distancias_cls_2(j) = sqrt((teste_media_sinal_cls_2 - media_sinal(j))^2 + (teste_curtose_cls_2 - curtose_sinal(j))^2 + (teste_eqm_21 - eqm_1(j))^2 + (teste_eqm_22 - eqm_2(j))^2 );
-        end
-
-        % Ordena as distâncias e os vizinhos
-        [a, b] = sort(distancias_cls_1);
-        neighbors1 = classes(b);
-
-        [c, d] = sort(distancias_cls_2);
-        neighbors2 = classes(d);
-
-        % Resultados
-        result1 = mode(neighbors1(1:FATOR_KNN));
-        result2 = mode(neighbors2(1:FATOR_KNN));
+        result1 = arvore(teste_eqm_11, teste_eqm_12, teste_media_sinal_cls_1, teste_curtose_cls_1);
+        result2 = arvore(teste_eqm_21, teste_eqm_22, teste_media_sinal_cls_2, teste_curtose_cls_2);
 
         if result1 ~= 0
             erro_ciclo = erro_ciclo + 1;
